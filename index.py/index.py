@@ -18,7 +18,7 @@ def mysql_data():
         return None
 
 def impress_data(connection):
-    query = "SELECT Date, Impressions, Engagements FROM posts"
+    query = f"SELECT Date, SUM(Impressions) AS Total_Impressions, SUM(Engagements) AS Total_Engagements FROM posts WHERE Date >= DATE_SUB(NOW(), INTERVAL 365 DAY) GROUP BY Date"
     try:
         data = pd.read_sql_query(query, connection)
         return data
@@ -28,14 +28,14 @@ def impress_data(connection):
 
 def visualize(data):
     plt.figure(figsize=(12, 6))
-    plt.bar(data['Date'], data['Impressions'], label='Impressions')
-    plt.bar(data['Date'], data['Engagements'], label='Engagements', alpha=0.7)
+    plt.plot(data['Date'], data['Impressions'], label='Impressions', marker='o')
+    plt.plot(data['Date'], data['Engagements'], label='Engagements', marker='o')
     plt.xlabel('Date')
     plt.ylabel('Count')
     plt.title('LinkedIn Impressions and Engagements Over Time')
     plt.xticks(rotation=45)
     plt.legend()
-    plt.grid(axis='y')
+    plt.grid()
     plt.tight_layout()
     plt.show()
 
